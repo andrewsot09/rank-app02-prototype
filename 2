@@ -1,0 +1,176 @@
+import { useState, useEffect } from "react";
+import { Frame } from "framer";
+import { motion, AnimatePresence } from "framer-motion";
+import { Trash2, ArrowLeft, ArrowRight, Home, User } from "lucide-react"; // Ícones minimalistas corretos!
+
+export default function App() {
+  const [screen, setScreen] = useState<"splash" | "feed" | "share" | "reply">("splash");
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
+  const videos = [
+    {
+      id: 1,
+      image: "https://images.unsplash.com/photo-1596495577886-d920f1fb7238?auto=format&fit=crop&w=800&q=80",
+      trashCount: 10,
+      shareCount: 5,
+      replyCount: 3,
+      rank: 328,
+    },
+    {
+      id: 2,
+      image: "https://images.unsplash.com/photo-1502767089025-6572583495b4?auto=format&fit=crop&w=800&q=80",
+      trashCount: 3,
+      shareCount: 8,
+      replyCount: 2,
+      rank: 400,
+    },
+  ];
+
+  useEffect(() => {
+    if (screen === "splash") {
+      setTimeout(() => setScreen("feed"), 500);
+    }
+  }, [screen]);
+
+  const currentVideo = videos[currentVideoIndex];
+
+  const handleTrash = () => {
+    if (currentVideoIndex < videos.length - 1) {
+      setCurrentVideoIndex(currentVideoIndex + 1);
+    } else {
+      setCurrentVideoIndex(0);
+    }
+  };
+
+  return (
+    <Frame
+      width={390}
+      height={844}
+      background="#0D0D0D"
+      center
+      style={{
+        overflow: "hidden",
+        borderRadius: 30,
+        position: "relative",
+      }}
+    >
+      <AnimatePresence mode="wait">
+        {screen === "splash" && (
+          <motion.div
+            key="splash"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            style={{
+              width: "100%",
+              height: "100%",
+              backgroundColor: "#0D0D0D",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              fontSize: 32,
+              fontWeight: "bold",
+              color: "white",
+            }}
+          >
+            RANK
+          </motion.div>
+        )}
+
+        {screen === "feed" && (
+          <motion.div
+            key="feed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            style={{
+              width: "100%",
+              height: "100%",
+              backgroundImage: `url(${currentVideo.image})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              position: "relative",
+            }}
+          >
+            {/* Número do Rank */}
+            <div
+              style={{
+                position: "absolute",
+                top: 20,
+                left: 20,
+                color: "white",
+                fontWeight: "bold",
+                fontSize: 18,
+              }}
+            >
+              #{currentVideo.rank}
+            </div>
+
+            {/* Ações - Lateral Direita */}
+            <div
+              style={{
+                position: "absolute",
+                right: 20,
+                bottom: 140,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 24,
+              }}
+            >
+              {/* Trash */}
+              <motion.div
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={handleTrash}
+                style={{ color: "white", cursor: "pointer", textAlign: "center" }}
+              >
+                <Trash2 size={32} />
+                <div style={{ fontSize: 12 }}>{currentVideo.trashCount}</div>
+              </motion.div>
+
+              {/* Reply (Seta para esquerda) */}
+              <motion.div
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setScreen("reply")}
+                style={{ color: "white", cursor: "pointer", textAlign: "center" }}
+              >
+                <ArrowLeft size={32} />
+                <div style={{ fontSize: 12 }}>{currentVideo.replyCount}</div>
+              </motion.div>
+
+              {/* Share (Seta para direita) */}
+              <motion.div
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setScreen("share")}
+                style={{ color: "white", cursor: "pointer", textAlign: "center" }}
+              >
+                <ArrowRight size={32} />
+                <div style={{ fontSize: 12 }}>{currentVideo.shareCount}</div>
+              </motion.div>
+            </div>
+
+            {/* Bottom Navigation */}
+            <div
+              style={{
+                position: "absolute",
+                bottom: 20,
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                gap: 40,
+              }}
+            >
+              <Home color="white" size={28} />
+              <User color="white" size={28} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </Frame>
+  );
+}
